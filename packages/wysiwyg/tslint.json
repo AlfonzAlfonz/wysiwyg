@@ -1,0 +1,18 @@
+{
+  "extends": ["tslint:recommended", "tslint-react"],
+  "linterOptions": {
+    "exclude": ["node_modules/**"]
+  },
+  "rules": {
+    "no-console": false,
+    "jsx-no-multiline-js": false,
+    "jsx-no-lambda": false,
+    "jsx-boolean-value": false,
+    "no-unused-expression": false,
+    "interface-name": false,
+    "object-literal-sort-keys": false,
+    "no-any": true,
+    "arrow-parens": false,
+    "trailing-comma": false
+  }
+}
