@@ -1,13 +1,16 @@
 import {
   BlockNode,
+  EditorCore,
   GenericNode,
+  InlineValue,
   TextNode,
+  Value,
   ValueDocument,
   WithChildren
 } from ".";
-import { EditorCore } from "./useEditable";
 import { mountNodes } from "./utils/mount";
 import { filterNodes, mapNodes } from "./utils/nodes";
+import { insertMarkToTextNode } from "./utils/text";
 
 export interface EditorCommands {
   getParentNode: (key: string) => WithChildren;
@@ -16,28 +19,42 @@ export interface EditorCommands {
   setNodeText: (key: string, text: string) => unknown;
   setMarkText: (key: string, mark: string, text: string) => unknown;
   mapDocumentNodes: (predicate: (n: GenericNode) => GenericNode) => unknown;
+  insertMarkToSelection: (marks: string[]) => unknown;
 }
 
-const commands = ({
+const commands = <T extends Value | InlineValue>({
   value,
   nodes,
   setValue,
-  setSelection
-}: EditorCore): EditorCommands => {
+  setSelection,
+  getSelectedNodes
+}: EditorCore<T>): EditorCommands => {
   const getParentNode = (key: string) =>
     nodes[key.replace(/-\d*$/, "")] as WithChildren;
 
   const getFirstTextNode = (node: GenericNode) =>
     filterNodes(node, n => n.object === "text")[0] as TextNode;
 
-  const setDocument = (document: ValueDocument) =>
-    setValue({
-      ...value,
-      document
-    });
+  const setDocument = (document: ValueDocument | TextNode) =>
+    value.object === "value"
+      ? setValue({
+          ...value,
+          document
+        })
+      : setValue({
+          ...value,
+          content: document
+        });
 
   const mapDocumentNodes = (predicate: (n: GenericNode) => GenericNode) =>
-    setDocument(mapNodes(value.document, predicate) as ValueDocument);
+    setDocument(
+      mapNodes(
+        value.object === "value"
+          ? (value as Value).document
+          : (value as InlineValue).content,
+        predicate
+      ) as ValueDocument
+    );
 
   const setNodeText = (key: string, text: string) =>
     mapDocumentNodes(n =>
@@ -92,7 +109,18 @@ const commands = ({
           }
         : n
     );
-    setSelection({ anchor: { key: text.key!, offset: 0 } });
+    setSelection([text.key!, "0", 0]);
+  };
+
+  const insertMarkToSelection = (marks: string[]) => {
+    const s = getSelectedNodes();
+    mapDocumentNodes(n => {
+      const selected = s.find(ss => ss.key === n.key);
+
+      return selected
+        ? insertMarkToTextNode(n as TextNode, selected, marks)
+        : n;
+    });
   };
 
   return {
@@ -101,7 +129,8 @@ const commands = ({
     mapDocumentNodes,
     setNodeText,
     setMarkText,
-    insertBlock
+    insertBlock,
+    insertMarkToSelection
   };
 };
 

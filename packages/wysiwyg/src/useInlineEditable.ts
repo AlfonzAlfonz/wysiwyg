@@ -1,19 +1,18 @@
-import { RefObject, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { Editor, EditorCore, GenericNode, Value } from ".";
+import { EditorCore, GenericNode, InlineEditor, InlineValue } from ".";
 import commands from "./commands";
 import useMarkRefs from "./useMarkRefs";
 import useSelection from "./useSelection";
-import { mountValue } from "./utils/mount";
-import { getNodes } from "./utils/nodes";
+import { mountInlineValue } from "./utils/mount";
 
-export const useEditable = (
-  initialValue: Value
-): Editor & { editorProps: Editor } => {
-  const [value, setValue] = useState(mountValue(initialValue));
+export const useInlineEditable = (
+  initialValue: InlineValue
+): InlineEditor & { editorProps: InlineEditor } => {
+  const [value, setValue] = useState(mountInlineValue(initialValue));
 
   const nodes = useMemo<Record<string, GenericNode>>(
-    () => ({ 0: value.document, ...getNodes(value.document.nodes) }),
+    () => ({ 0: value.content }),
     [value]
   );
 
@@ -21,7 +20,7 @@ export const useEditable = (
 
   const [getSelectedNodes, setSelection] = useSelection(markRefs, nodes);
 
-  const core: EditorCore<Value> = {
+  const core: EditorCore<InlineValue> = {
     value,
     setValue,
     nodes,
@@ -29,7 +28,7 @@ export const useEditable = (
     setMarkRef,
     getSelectedNodes,
     setSelection,
-    inline: false
+    inline: true
   };
 
   const r = {

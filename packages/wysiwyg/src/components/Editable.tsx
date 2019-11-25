@@ -1,11 +1,11 @@
 import * as React from "react";
 
-import { BlockNode } from "../../";
-import { Editor, editorContext } from "../../useEditor";
-import Block from "./Block";
-import { onKeyDown } from "./onKeyDown";
-import defaultRenderBlock from "./render/defaultRenderBlock";
-import defaultRenderMark from "./render/defaultRenderMark";
+import { BlockNode, Editor } from "..";
+import { editorContext } from "../useEditor";
+import Block from "./internal/Block";
+import { onKeyDown } from "./internal/onKeyDown";
+import defaultRenderBlock from "./internal/render/defaultRenderBlock";
+import defaultRenderMark from "./internal/render/defaultRenderMark";
 
 interface Props {
   readonly?: boolean;
@@ -13,7 +13,7 @@ interface Props {
   renderMark?: (mark: string, next: () => React.FC) => React.FC;
 }
 
-const Editable: React.FC<Omit<Editor, "render"> & Props> = props => {
+const Editable: React.FC<Editor & Props> = props => {
   const { renderBlock, renderMark, readonly = false, ...editor } = props;
   return (
     <editorContext.Provider

@@ -1,22 +1,36 @@
 import * as React from "react";
 import { Editable, useEditable, Value } from "wysiwyg";
 
-import { PageStyle } from "../styles";
+import { PageStyle, EditorStyle } from "../styles";
 import renderBlock from "./render/renderBlock";
 import renderMark from "./render/renderMark";
 
 const Editor: React.FC = () => {
-  const { value, editorProps } = useEditable(basicValue);
+  const { value, editorProps, insertMarkToSelection } = useEditable(basicValue);
 
   return (
-    <PageStyle>
+    <EditorStyle>
       <div>
         <div className="toolbar">
           <span>
-            <b>B</b>
+            <b
+              onClick={e => {
+                e.preventDefault();
+                insertMarkToSelection(["bold"]);
+              }}
+            >
+              B
+            </b>
           </span>{" "}
           <span>
-            <i>I</i>
+            <i
+              onClick={e => {
+                e.preventDefault();
+                insertMarkToSelection(["italic"]);
+              }}
+            >
+              I
+            </i>
           </span>
         </div>
         <Editable
@@ -26,7 +40,7 @@ const Editor: React.FC = () => {
         />
       </div>
       <pre>{JSON.stringify(value, null, "  ")}</pre>
-    </PageStyle>
+    </EditorStyle>
   );
 };
 
@@ -44,7 +58,7 @@ export const basicValue: Value = {
           {
             object: "text",
             text: [
-              { string: "lorem ipsum dolor sit amet", marks: [] },
+              { string: "lorem ipsum dolor sit amet ", marks: [] },
               { string: "bold", marks: ["bold"] }
             ]
           }
@@ -65,7 +79,7 @@ export const basicValue: Value = {
         object: "block",
         type: "image",
         data: {
-          src: "http://placekitten.com/200/300"
+          src: "http://placekitten.com/420/690"
         },
         nodes: []
       },

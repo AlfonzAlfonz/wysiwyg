@@ -1,6 +1,20 @@
 import styled, { createGlobalStyle } from "styled-components";
 
 export const PageStyle = styled.div`
+  .menu {
+    a {
+      color: #ccc;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 0.5em;
+      &:hover {
+        color: white;
+      }
+    }
+  }
+`;
+
+export const EditorStyle = styled.div`
   display: flex;
   color: #333;
   & > * {

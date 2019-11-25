@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { BlockNode, TextNode } from "../../";
+import { BlockNode, TextNode } from "../..";
 import useEditor from "../../useEditor";
 import Text from "./Text";
 
